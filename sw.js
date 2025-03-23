@@ -1,73 +1,73 @@
-self.addEventListener('install', function(event) {
-  console.log('[Service Worker] Installing Service Worker ...', event);
-  self.skipWaiting(); //PENTING bila ada versi baru!!
+const CACHE_NAME = 'pwa-cache-v3';
+const DYNAMIC_CACHE = 'pwa-dynamic-cache';
+const OFFLINE_PAGE = '/offline.html';
+
+self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Installing...');
   event.waitUntil(
-    caches.open('static')
-      .then(function(cache) {
-        console.log('[Service Worker] Precaching App Shell');
-        cache.addAll([
-          '/',
-          '/index.html',
-          '/src/js/app.js',
-          '/src/js/feed.js',
-          '/src/js/promise.js',
-          '/src/js/fetch.js',
-          '/src/js/material.min.js',
-          '/src/css/app.css',
-          '/src/css/feed.css',
-          '/src/images/main-image.jpg',
-          'https://fonts.googleapis.com/css?family=Roboto:400,700',
-          'https://fonts.googleapis.com/icon?family=Material+Icons',
-          'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
-        ]);
-      })
-  )
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[Service Worker] Pre-caching assets');
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/offline.html',
+        '/src/css/app.css',
+        '/src/js/app.js',
+        '/manifest.json',
+        '/second.html',
+        '/src/css/offline.css'
+      ]).then(() => {
+        console.log('[Service Worker] All assets cached');
+      }).catch((error) => {
+        console.error('[Service Worker] Failed to cache assets', error);
+      });
+    })
+  );
+  self.skipWaiting();
 });
 
-
-self.addEventListener('activate', function(event) {
-  console.log('[Service Worker] Activating Service Worker ....', event);
+self.addEventListener('activate', (event) => {
+  console.log('[Service Worker] Activating...');
   event.waitUntil(
-    caches.keys()
-      .then(function(keyList) {
-        return Promise.all(keyList.map(function(key) {
-          if (key !== CACHE_STATIC_NAME && key !== CACHE_DYNAMIC_NAME) {
-            console.log('[Service Worker] Removing old cache.', key);
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME && key !== DYNAMIC_CACHE) {
+            console.log('[Service Worker] Deleting old cache:', key);
             return caches.delete(key);
           }
-        }));
-      })
+        })
+      );
+    })
   );
   return self.clients.claim();
 });
 
-
-
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request)
-      .then(function(response) {
-        if (response) {
-          return response;
-        } else {
-          return fetch(event.request)
-            .then(function(res) {
-              return caches.open(CACHE_DYNAMIC_NAME)
-                .then(function(cache) {
-                  cache.put(event.request.url, res.clone());
-                  return res;
-                })
-            })
-            .catch(function(err) {
-              return caches.open(CACHE_STATIC_NAME)
-                .then(function(cache) {
-                  return cache.match('/offline.html');
-                });
-            });
+    caches.match(event.request).then(function(response) {
+      // Return cached response if found
+      if (response) {
+        return response;
+      }
+      
+      // Otherwise, fetch from network
+      return fetch(event.request).then(function(res) {
+        // Make a copy of the response
+        const resClone = res.clone();
+        
+        // Open dynamic cache and store the response
+        caches.open(DYNAMIC_CACHE).then(function(cache) {
+          cache.put(event.request, resClone);
+        });
+        
+        return res;
+      }).catch(function(err) {
+        // If both cache and network fail for HTML requests, show offline page
+        if (event.request.headers.get('accept').includes('text/html')) {
+          return caches.match(OFFLINE_PAGE);
         }
-      })
+      });
+    })
   );
 });
-  
-
-
