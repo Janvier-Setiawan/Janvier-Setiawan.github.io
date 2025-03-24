@@ -1,75 +1,46 @@
-var title = document.querySelector('.title');
-var courseFeatureElements = document.querySelectorAll('.course-feature');
-var button = document.querySelector('button');
+document.addEventListener("DOMContentLoaded", () => {
+  const postsContainer = document.getElementById("posts");
 
-navigator.serviceWorker.register('/sw.js');
+  // API Endpoint (Ganti dengan API yang sesuai)
+  const API_URL = "https://jsonplaceholder.typicode.com/posts"; 
 
-function animate() {
-  title.classList.remove('animate-in');
-  for (var i = 0; i < courseFeatureElements.length; i++) {
-    courseFeatureElements[i].classList.remove('animate-in');
+  // Fungsi untuk mengambil data dari API
+  async function fetchPosts() {
+      try {
+          const response = await fetch(API_URL);
+          if (!response.ok) {
+              throw new Error("Gagal mengambil data");
+          }
+          const posts = await response.json();
+          displayPosts(posts);
+      } catch (error) {
+          console.error("Error:", error);
+          postsContainer.innerHTML = "<p style='color: red;'>Gagal memuat postingan.</p>";
+      }
   }
-  button.classList.remove('animate-in');
 
-  setTimeout(function () {
-    title.classList.add('animate-in');
-  }, 1000);
-
-  setTimeout(function () {
-    courseFeatureElements[0].classList.add('animate-in');
-  }, 3000);
-
-  setTimeout(function () {
-    courseFeatureElements[1].classList.add('animate-in');
-  }, 4500);
-
-  setTimeout(function () {
-    courseFeatureElements[2].classList.add('animate-in');
-  }, 6000);
-
-  setTimeout(function () {
-    courseFeatureElements[3].classList.add('animate-in');
-  }, 7500);
-
-  setTimeout(function () {
-    courseFeatureElements[4].classList.add('animate-in');
-  }, 9000);
-
-  setTimeout(function () {
-    courseFeatureElements[5].classList.add('animate-in');
-  }, 10500);
-
-  setTimeout(function () {
-    courseFeatureElements[6].classList.add('animate-in');
-  }, 12000);
-
-  setTimeout(function () {
-    button.classList.add('animate-in');
-  }, 13500);
-}
-
-animate();
-
-button.addEventListener('click', function() {
-  animate();
-});
-
-var deferredPrompt;
-window.addEventListener('beforeinstallprompt', function(event) {
-  console.log('beforeinstallprompt fired');
-  event.preventDefault();
-  deferredPrompt = event;
-  return false;
-});
-
-function onSaveButtonClicked(event) {
-  console.log('clicked');
-  if ('caches' in window) {
-    caches.open('user-requested')
-      .then(function(cache) {
-        cache.add('https://httpbin.org/get');
-        cache.add('/src/images/sf-boat.jpg');
+  // Fungsi untuk menampilkan postingan di halaman
+  function displayPosts(posts) {
+      postsContainer.innerHTML = ""; // Hapus konten lama
+      posts.slice(0, 5).forEach(post => { // Ambil 5 postingan pertama
+          const postElement = document.createElement("div");
+          postElement.classList.add("post");
+          postElement.innerHTML = `
+              <h3>${post.title}</h3>
+              <p>${post.body}</p>
+              <hr>
+          `;
+          postsContainer.appendChild(postElement);
       });
   }
-}
 
+  // Panggil fungsi fetchPosts saat halaman dimuat
+  fetchPosts();
+
+  // Service Worker Registration (Jika Ada)
+  if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+          .then(reg => console.log("Service Worker Registered!", reg))
+          .catch(err => console.error("Service Worker Registration Failed", err));
+  }
+});
