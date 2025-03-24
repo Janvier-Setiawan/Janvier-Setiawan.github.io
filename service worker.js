@@ -11,7 +11,6 @@ const urlsToCache = [
     '/styles.css'
 ];
 
-// Install Service Worker & Cache Static Files
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -21,7 +20,6 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activate Service Worker
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -37,7 +35,6 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch Handler with Network then Cache
 self.addEventListener('fetch', (event) => {
     if (event.request.mode === 'navigate') {
         event.respondWith(
