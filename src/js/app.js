@@ -1,46 +1,41 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const postsContainer = document.getElementById("posts");
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('Service Worker Registered', reg))
+      .catch(err => console.log('Service Worker Failed', err));
+}
 
-  // API Endpoint (Ganti dengan API yang sesuai)
-  const API_URL = "https://jsonplaceholder.typicode.com/posts"; 
+async function fetchPosts() {
+  try {
+      const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+      const posts = await response.json();
+      const postsContainer = document.getElementById('posts');
+      
+      localStorage.setItem('cachedPosts', JSON.stringify(posts)); // Simpan ke localStorage
 
-  // Fungsi untuk mengambil data dari API
-  async function fetchPosts() {
-      try {
-          const response = await fetch(API_URL);
-          if (!response.ok) {
-              throw new Error("Gagal mengambil data");
-          }
-          const posts = await response.json();
-          displayPosts(posts);
-      } catch (error) {
-          console.error("Error:", error);
-          postsContainer.innerHTML = "<p style='color: red;'>Gagal memuat postingan.</p>";
+      postsContainer.innerHTML = posts.slice(0, 10).map(post => `
+          <div class="post">
+              <h2>${post.title}</h2>
+              <p>${post.body}</p>
+              <p class="id">Post ID: ${post.id}</p>
+          </div>
+      `).join('');
+  } catch (error) {
+      console.log("Fetching failed, loading from cache...");
+
+      const cachedPosts = localStorage.getItem('cachedPosts');
+      if (cachedPosts) {
+          const postsContainer = document.getElementById('posts');
+          const posts = JSON.parse(cachedPosts);
+          postsContainer.innerHTML = posts.slice(0, 10).map(post => `
+              <div class="post">
+                  <h2>${post.title}</h2>
+                  <p>${post.body}</p>
+                  <p class="id">Post ID: ${post.id}</p>
+              </div>
+          `).join('');
+      } else {
+          document.getElementById('posts').innerHTML = '<p>Failed to load posts.</p>';
       }
   }
-
-  // Fungsi untuk menampilkan postingan di halaman
-  function displayPosts(posts) {
-      postsContainer.innerHTML = ""; // Hapus konten lama
-      posts.slice(0, 5).forEach(post => { // Ambil 5 postingan pertama
-          const postElement = document.createElement("div");
-          postElement.classList.add("post");
-          postElement.innerHTML = `
-              <h3>${post.title}</h3>
-              <p>${post.body}</p>
-              <hr>
-          `;
-          postsContainer.appendChild(postElement);
-      });
-  }
-
-  // Panggil fungsi fetchPosts saat halaman dimuat
-  fetchPosts();
-
-  // Service Worker Registration (Jika Ada)
-  if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
-          .then(reg => console.log("Service Worker Registered!", reg))
-          .catch(err => console.error("Service Worker Registration Failed", err));
-  }
-});
+}
+fetchPosts();

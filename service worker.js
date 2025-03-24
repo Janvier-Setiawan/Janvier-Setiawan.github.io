@@ -1,75 +1,60 @@
-const CACHE_NAME = 'pwa-cache-v2'; // Ganti versi cache agar update berjalan
+const CACHE_NAME = 'pwa-blog-cache-v1';
 const OFFLINE_PAGE = '/offline.html';
-const CACHE_ASSETS = [
+
+const urlsToCache = [
     '/',
     '/index.html',
     '/about.html',
     '/offline.html',
-    '/manifest.json'
+    '/app.js',
+    '/manifest.json',
+    '/styles.css'
 ];
 
-// Install Service Worker dan cache aset
-self.addEventListener('install', event => {
+// Install Service Worker & Cache Static Files
+self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => {
-            return cache.addAll(CACHE_ASSETS);
+        caches.open(CACHE_NAME).then((cache) => {
+            return cache.addAll(urlsToCache);
         })
     );
-    self.skipWaiting(); // Langsung aktifkan Service Worker
+    self.skipWaiting();
 });
 
-// Activate Service Worker dan hapus cache lama
-self.addEventListener('activate', event => {
+// Activate Service Worker
+self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then(cacheNames => {
+        caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames
-                    .filter(name => name !== CACHE_NAME) // Hapus cache lama
-                    .map(name => caches.delete(name))
+                cacheNames.map((cache) => {
+                    if (cache !== CACHE_NAME) {
+                        return caches.delete(cache);
+                    }
+                })
             );
         })
     );
-    self.clients.claim(); // Segera gunakan SW yang baru
+    self.clients.claim();
 });
 
-// Fetch Event Handling
-self.addEventListener('fetch', event => {
-    const requestUrl = new URL(event.request.url);
-
-    // 1. Caching untuk API Posts (Network-First)
-    if (requestUrl.origin === 'https://jsonplaceholder.typicode.com' && requestUrl.pathname.startsWith('/posts')) {
+// Fetch Handler with Network then Cache
+self.addEventListener('fetch', (event) => {
+    if (event.request.mode === 'navigate') {
         event.respondWith(
-            fetch(event.request)
-                .then(response => {
-                    return caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, response.clone());
-                        return response;
-                    });
-                })
-                .catch(() => {
-                    return caches.match(event.request).then(response => 
-                        response || new Response('{"error": "Data tidak tersedia offline"}', { headers: { "Content-Type": "application/json" } })
-                    );
-                })
+            fetch(event.request).catch(() => caches.match(OFFLINE_PAGE))
         );
         return;
     }
 
-    // 2. Cache-First untuk aset statis & halaman
     event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request)
-                .then(networkResponse => {
-                    return caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, networkResponse.clone());
-                        return networkResponse;
-                    });
+        fetch(event.request)
+            .then((response) => {
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, responseClone);
                 });
-        }).catch(() => {
-            // 3. Jika gagal, tampilkan halaman offline untuk navigasi
-            if (event.request.mode === 'navigate') {
-                return caches.match(OFFLINE_PAGE);
-            }
-        })
+                return response;
+            })
+            .catch(() => caches.match(event.request))
     );
 });
