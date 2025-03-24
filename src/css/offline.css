@@ -1,0 +1,39 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.offline-message {
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.offline-message h1 {
+    font-size: 24px;
+    color: #d9534f;
+    margin-bottom: 10px;
+}
+
+.offline-message p {
+    font-size: 16px;
+    color: #555;
+}
+
+.offline-message a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.offline-message a:hover {
+    text-decoration: underline;
+}
