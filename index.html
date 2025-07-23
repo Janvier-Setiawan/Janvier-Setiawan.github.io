@@ -1,118 +1,122 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Blog Posts</title>
-    
-    <!-- Manifest untuk PWA -->
-    <link rel="manifest" href="manifest.json">
-
-    <!-- Meta Tags untuk PWA -->
-    <meta name="theme-color" content="#007bff">
-    <meta name="description" content="A simple blog displaying posts from API.">
-    
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            text-align: center;
-            padding: 20px;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-        }
-        .post {
-            background: white;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        .post h2 {
-            margin: 0;
-            font-size: 18px;
-        }
-        .post p {
-            font-size: 14px;
-            color: #555;
-        }
-        .post .id {
-            font-size: 12px;
-            color: #888;
-        }
-        nav {
-            background: #007bff;
-            color: white;
-            padding: 10px;
-            text-align: center;
-        }
-        nav a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        .error {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+    <title>Janvier Setiawan</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="about.html">About</a>
-    </nav>
-
     <div class="container">
-        <h1>My Blog Posts</h1>
-        <div id="posts">Loading posts...</div>
+        <header class="header">
+            <h1 class="name">Janvier Setiawan</h1>
+        </header>
+
+        <nav class="navigation">
+            <button class="tab-button active" data-tab="about">About</button>
+            <button class="tab-button" data-tab="work">Work</button>
+            <button class="tab-button" data-tab="essays">Essays</button>
+            <button class="tab-button" data-tab="contact">Contact</button>
+        </nav>
+
+        <main class="content">
+            <section id="about" class="tab-content active">
+                <div class="content-inner">
+                    <p class="intro">I am a third-year undergrad student studying Business Information Systems at Petra Christian University.</p>
+                    
+                    <div class="section">
+                        <h3>Focus</h3>
+                        <p>I specialize in full-stack web development with a primary focus on Django framework. My experience ranges from creating portfolio websites to developing comprehensive ERP software solutions.</p>
+                    </div>
+
+                    <div class="section">
+                        <h3>Interests</h3>
+                        <p>Web development, database design, business process optimization, and creating efficient digital solutions that bridge technology and business needs.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="work" class="tab-content">
+                <div class="content-inner">
+                    <h2>Projects & Work</h2>
+                    
+                    <div class="project">
+                        <h3>ERP Software Development</h3>
+                        <p>Comprehensive enterprise resource planning solutions built with Django, focusing on inventory management, financial tracking, and business process automation.</p>
+                        <div class="tech-stack">Django • PostgreSQL • JavaScript • CSS</div>
+                    </div>
+
+                    <div class="project">
+                        <h3>Portfolio Websites</h3>
+                        <p>Custom portfolio and business websites with responsive design, optimized performance, and modern web standards implementation.</p>
+                        <div class="tech-stack">Django • HTML5 • CSS3 • JavaScript</div>
+                    </div>
+
+                    <div class="project">
+                        <h3>Full-Stack Web Applications</h3>
+                        <p>Dynamic web applications featuring user authentication, database integration, and interactive user interfaces for various business requirements.</p>
+                        <div class="tech-stack">Django • Python • SQLite • Bootstrap</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="essays" class="tab-content">
+                <div class="content-inner">
+                    <h2>Essays</h2>
+                    <p class="intro">I write essays for fun sometimes.</p>
+                    
+                    <div class="essay-list">
+                        <div class="essay-item">
+                            <h3>The Evolution of Business Information Systems</h3>
+                            <p>Exploring how modern BIS practices are reshaping traditional business operations...</p>
+                        </div>
+                        
+                        <div class="essay-item">
+                            <h3>Django in Enterprise Development</h3>
+                            <p>Why Python's Django framework is becoming the go-to choice for enterprise applications...</p>
+                        </div>
+                        
+                        <div class="essay-item">
+                            <h3>The Future of Web Development</h3>
+                            <p>Thoughts on emerging technologies and their impact on full-stack development...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="tab-content">
+                <div class="content-inner">
+                    <h2>Contact</h2>
+                    
+                    <div class="contact-section">
+                        <h3>Get in touch</h3>
+                        <p>Feel free to reach out for collaborations, opportunities, or just to say hello.</p>
+                    </div>
+
+                    <div class="contact-links">
+                        <a href="mailto:janvier.setiawan@example.com" class="contact-link">
+                            <span class="contact-label">Email</span>
+                            <span class="contact-value">janvier.setiawan@example.com</span>
+                        </a>
+                        
+                        <a href="https://linkedin.com/in/janvier-setiawan" class="contact-link" target="_blank" rel="noopener">
+                            <span class="contact-label">LinkedIn</span>
+                            <span class="contact-value">linkedin.com/in/janvier-setiawan</span>
+                        </a>
+                        
+                        <a href="https://github.com/Janvier-Setiawan" class="contact-link" target="_blank" rel="noopener">
+                            <span class="contact-label">GitHub</span>
+                            <span class="contact-value">github.com/Janvier-Setiawan</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
     </div>
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service worker.js')
-                .then(reg => console.log('Service Worker Registered:', reg))
-                .catch(err => console.error('Service Worker Registration Failed:', err));
-        }
-    </script>
-
-    <script>
-        async function fetchPosts() {
-            const postsContainer = document.getElementById('posts');
-
-            try {
-                const response = await fetch('https://jsonplaceholder.typicode.com/posts');
-                
-                if (!response.ok) {
-                    throw new Error("Gagal mengambil data");
-                }
-
-                const posts = await response.json();
-
-                postsContainer.innerHTML = posts.slice(0, 5).map(post => `
-                    <div class="post">
-                        <h2>${post.title}</h2>
-                        <p>${post.body}</p>
-                        <p class="id">Post ID: ${post.id}</p>
-                    </div>
-                `).join('');
-
-            } catch (error) {
-                console.error("Error fetching posts:", error);
-                postsContainer.innerHTML = `<p class="error">Failed to load posts. Please try again later.</p>`;
-            }
-        }
-
-        fetchPosts();
-    </script>
-
+    <script src="script.js"></script>
 </body>
 </html>
